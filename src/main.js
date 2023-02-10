@@ -1,11 +1,116 @@
+// Elements from HTML for direct access in typescript
+var commandInput;
+var history;
+var modeDisplay;
+// Array of command history to allow for re-rendering when switching modes
+var historyValues = [];
+// Variable for loaded CSV
+var file;
+// Brief mode variable
+var briefMode = true;
+// Map of commands to functions
+var commandMap = {
+    "search": search,
+    "view": view,
+    "load_file": loadFile,
+    "mode": toggleMode
+};
 // The window.onload callback is invoked when the window is first loaded by the browser
 window.onload = function () {
     prepareKeypress();
     prepareButtonPress();
+    prepareHistory();
+    prepareModeDisplay();
+    renderModeDisplay();
     // If you're adding an event for a button click, do something similar.
     // The event name in that case is "click", not "keypress", and the type of the element 
     // should be HTMLButtonElement. The handler function for a "click" takes no arguments.
 };
+// Prepares the display of the "Brief" / "Verbose" mode
+function prepareModeDisplay() {
+    var maybeMode = document.getElementById("mode");
+    if (maybeMode == null) {
+        console.log("mode display not found");
+    }
+    else if (!(maybeMode instanceof HTMLSpanElement)) {
+        console.log("Found element ".concat(maybeMode, ", but not span"));
+    }
+    else {
+        modeDisplay = maybeMode;
+        renderModeDisplay();
+    }
+}
+// Renders only the display of the "Brief" / "Verbose" mode
+function renderModeDisplay() {
+    if (briefMode) {
+        modeDisplay.innerHTML = "Brief";
+    }
+    else {
+        modeDisplay.innerHTML = "Verbose";
+    }
+}
+// Toggles between "Brief" / "Verbose" mode. Users can choose to specify which mode
+function toggleMode(args) {
+    if (args.length > 2) {
+        // If more arguments than intended, return error string
+        return "Error: incorrect number of arguments";
+    }
+    if (args.length === 1) {
+        // If only one argument, which is the "mode" command itself, then flip briefMode to other mode
+        briefMode = !briefMode;
+    }
+    else {
+        // If there is another argument, argument 1 must specify "Brief" / "Verbose"
+        var arg = args[1].toLowerCase();
+        // Toggle briefMode accordingly
+        if (arg === "brief") {
+            briefMode = true;
+        }
+        else if (arg === "verbose") {
+            briefMode = false;
+        }
+        else {
+            // If mode not recognized, return error string
+            return "Error: Unrecognized mode ".concat(args[0], ", please select either \"Brief\" or \"Verbose\"");
+        }
+    }
+    // Re-render display of mode and history div
+    renderHistory();
+    renderModeDisplay();
+    // Return command output
+    return "Mode switched to ".concat(briefMode ? '"Brief"' : '"Verbose"');
+}
+// Function for viewing the CSV file
+// Returns a string of the HTML table element if possible
+function view(args) {
+    return "TODO: view results";
+}
+// Function for loading the CSV file
+// Parameter is filepath
+// Returns whether file is loaded or not
+function loadFile(args) {
+    return "File loaded";
+}
+// Function for saerching in CSV
+// Parameters are column (index or name) and value
+// Returns row in which a value is present
+function search(args) {
+    return "TODO: search results";
+}
+// Prepares the repl history div element
+function prepareHistory() {
+    var maybeHistory = document.getElementById("history");
+    if (maybeHistory == null) {
+        console.log("Couldn't find div element");
+    }
+    else if (!(maybeHistory instanceof HTMLDivElement)) {
+        console.log("Found element ".concat(maybeHistory, ", but it wasn't a Div"));
+    }
+    else {
+        history = maybeHistory;
+    }
+}
+// Prepares the command submit button element and adds listener
 function prepareButtonPress() {
     var maybeButtons = document.getElementsByClassName("submit-button");
     var maybeButton = maybeButtons.item(0);
@@ -19,11 +124,50 @@ function prepareButtonPress() {
         maybeButton.addEventListener("click", handleButton);
     }
 }
-function handleButton(event) {
-    // The event has more fields than just the key pressed (e.g., Alt, Ctrl, etc.)
-    pressCount = pressCount + 10;
-    event.button;
+// Re-renders all previous commands and outputs based on brief mode
+function renderHistory() {
+    // Clear HTML in history div
+    history.innerHTML = "";
+    // For every (command, output) pair, render based on brief mode
+    historyValues.forEach(function (value) {
+        if (briefMode) {
+            history.innerHTML += "\n            <div class=\"repl-block\">\n            ".concat(value.output, "\n            </div>");
+        }
+        else {
+            history.innerHTML += "\n            <div class=\"repl-block\">\n            Command: ".concat(value.command, "\n            <hr>\n            Output: ").concat(value.output, "\n            </div>");
+        }
+    });
 }
+// Handles button-click event
+function handleButton(event) {
+    // Check if command input is empty
+    if (commandInput.value.trim() !== "") {
+        // Split input into arguments
+        var args = commandInput.value.trim().split(" ");
+        // Retrieve function from commandMap
+        var possibleFunc = commandMap[args[0]];
+        // Instantiate result string
+        var res = void 0;
+        if (possibleFunc == null) {
+            // If there is no function mapped to the given command, then it is an invalid command
+            res = "Invalid command";
+        }
+        else {
+            // If there is a function, pass in all arguments of command
+            res = possibleFunc(args);
+        }
+        // Record command and output
+        historyValues.push({
+            command: commandInput.value,
+            output: res
+        });
+        // Re-render history div based on brief mode settings
+        renderHistory();
+    }
+    // Clear command input
+    commandInput.value = "";
+}
+// Prepares for Keypress events
 function prepareKeypress() {
     // As far as TypeScript knows, there may be *many* elements with this class.
     var maybeInputs = document.getElementsByClassName('repl-command-box');
@@ -38,10 +182,11 @@ function prepareKeypress() {
         console.log("Found element ".concat(maybeInput, ", but it wasn't an input"));
     }
     else {
+        commandInput = maybeInput;
         // Notice that we're passing *THE FUNCTION* as a value, not calling it.
         // The browser will invoke the function when a key is pressed with the input in focus.
         //  (This should remind you of the strategy pattern things we've done in Java.)
-        maybeInput.addEventListener("keypress", handleKeypress);
+        commandInput.addEventListener("keypress", handleKeypress);
     }
 }
 // We'll use a global state reference for now

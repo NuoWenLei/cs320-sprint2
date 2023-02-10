@@ -12,9 +12,3 @@ test('handleKeypress counting', function () {
     main.handleKeypress(new KeyboardEvent("keypress", { key: "y" }));
     expect(main.getPressCount()).toBe(2);
 });
-
-
-test("handleMouseClick counting", function () {
-  main.handleButton(MouseEvent);
-  expect(main.getPressCount()).toBe(12)
-});

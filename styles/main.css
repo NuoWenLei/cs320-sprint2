@@ -23,14 +23,16 @@ html:hover{
 } */
 .repl {
     position:relative;
-    min-height:95vh;    
+    min-height: 95vh;    
 }
 
 .repl-history {      
-    height:85vh;   
+    height: 60vh;   
     margin: auto;
     display: block;
-    overflow: scroll;    
+    overflow: scroll;
+    overflow-y: scroll;
+    background-color: #d5f2d5;
 }
 
 .repl-input {        
@@ -41,5 +43,13 @@ html:hover{
     width: 90%;            
     margin: auto;
     display: block;
+}
+
+.repl-block {
+    border: black;
+    border-style: solid;
+    border-width: 1px;
+    margin: 5px;
+    padding: 5px;
 }
 
