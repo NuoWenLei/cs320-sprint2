@@ -1,3 +1,4 @@
+import { dataMap } from "./mockedJson.js";
 // Elements from HTML for direct access in typescript
 var commandInput;
 var history;
@@ -26,6 +27,9 @@ window.onload = function () {
     // The event name in that case is "click", not "keypress", and the type of the element 
     // should be HTMLButtonElement. The handler function for a "click" takes no arguments.
 };
+function getData(path) {
+    return dataMap[path];
+}
 // Prepares the display of the "Brief" / "Verbose" mode
 function prepareModeDisplay() {
     var maybeMode = document.getElementById("mode");
@@ -89,7 +93,25 @@ function view(args) {
 // Parameter is filepath
 // Returns whether file is loaded or not
 function loadFile(args) {
-    return "File loaded";
+    // Return error for wrong number of arguments
+    if (args.length !== 2) {
+        return "Error: Wrong number of arguments, please only provide path to the CSV";
+    }
+    // get fileData via getData() function
+    var path = args[1];
+    var fileData = getData(path);
+    // Determine what type fileData is
+    if (fileData == null) {
+        return "Error: File not found";
+    }
+    else if (fileData instanceof (Array)) {
+        file = fileData;
+        return "Loaded ".concat(path, " as a CSV file with no header");
+    }
+    else {
+        file = fileData;
+        return "Loaded ".concat(path, " as a CSV file with header");
+    }
 }
 // Function for saerching in CSV
 // Parameters are column (index or name) and value

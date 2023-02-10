@@ -1,3 +1,5 @@
+import { dataMap } from "./mockedJson.js";
+
 // Elements from HTML for direct access in typescript
 let commandInput: HTMLInputElement;
 let history: HTMLDivElement;
@@ -9,7 +11,7 @@ let historyValues: Array<{
     output: string}> = [];
 
 // Variable for loaded CSV
-let file: Array<Array<string>>;
+let file: Array<Array<string>> | {[key: string]: string[]};
 
 // Brief mode variable
 let briefMode: boolean = true;
@@ -33,6 +35,10 @@ window.onload = () => {
     // If you're adding an event for a button click, do something similar.
     // The event name in that case is "click", not "keypress", and the type of the element 
     // should be HTMLButtonElement. The handler function for a "click" takes no arguments.
+}
+
+function getData(path: string) {
+    return dataMap[path];
 }
 
 // Prepares the display of the "Brief" / "Verbose" mode
@@ -99,7 +105,23 @@ function view(args: string[]): string {
 // Parameter is filepath
 // Returns whether file is loaded or not
 function loadFile(args: string[]): string {
-    return "File loaded";
+    // Return error for wrong number of arguments
+    if (args.length !== 2) {
+        return "Error: Wrong number of arguments, please only provide path to the CSV";
+    }
+    // get fileData via getData() function
+    const path: string = args[1];
+    const fileData: {[key: string]: string[]} | Array<Array<string>> | null = getData(path);
+    // Determine what type fileData is
+    if (fileData == null) {
+        return "Error: File not found";
+    } else if (fileData instanceof Array<Array<string>>) {
+        file = fileData;
+        return `Loaded ${path} as a CSV file with no header`;
+    } else {
+        file = fileData;
+        return `Loaded ${path} as a CSV file with header`;
+    }
 }
 
 // Function for saerching in CSV
