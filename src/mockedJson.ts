@@ -14,9 +14,23 @@ const noHeaderData: Array<Array<string>> = [
 	["RI", "MA", "TX", "CA", "CA"]
 ];
 
+const emptyHeaders: {[key: string]: string[]} = {};
+
+const emptyHeadersWithKey: {[key: string]: string[]} = {
+	"a": []
+};
+
+const emptyNoHeaders: Array<Array<string>> = [];
+
+const emptyNoHeadersWithArr: Array<Array<string>> = [[]];
+
 const dataMap: {[key: string]: {[key: string]: string[]} | Array<Array<string>>} = {
 	"data/headerData.csv": headerData,
-	"data/noHeaderData.csv": noHeaderData
+	"data/noHeaderData.csv": noHeaderData,
+	"data/emptyHeader.csv": emptyHeaders,
+	"data/emptyHeaderKeys.csv": emptyHeadersWithKey,
+	"data/emptyNoHeader.csv": emptyNoHeaders,
+	"data/emptyNoHeaderArr.csv": emptyNoHeadersWithArr
 };
 
 export { dataMap };

@@ -98,9 +98,57 @@ function toggleMode(args: string[]): string {
 // Function for viewing the CSV file
 // Returns a string of the HTML table element if possible
 function view(args: string[]): string {
-    return "TODO: view results";
+    if (file == null) {
+        return "No file loaded";
+    }
+    if (args.length !== 1) {
+        return "Error: incorrect number of arguments";
+    }
+    let tableString: string = "<table>"
+    let restructuredArr: Array<string> = [];
+    if (file instanceof Array<Array<string>>) {
+        if (file.length !== 0) {
+            for (let _ in file[0]) {
+                restructuredArr.push("<tr>");
+            }
+            file.forEach((arr: Array<string>) => {
+                let rowNum: number = 0;
+                arr.forEach((elem: string) => {
+                    restructuredArr[rowNum] += `<td>${elem}</td>`;
+                    rowNum += 1;
+                });
+            });
+            restructuredArr = restructuredArr.map((tr: string) => {
+                return tr + "</tr>";
+            });
+        }
+    }else {
+        if (Object.keys(file).length !== 0) {
+            let header: string = "<tr>";
+            for (let k in file) {
+                header += `<th>${k}</th>`;
+            }
+            header += "</tr>";
+            tableString += header;
+            file[Object.keys(file)[0]].forEach((_: string) => {
+                restructuredArr.push("<tr>");
+            });
+            for (let k in file) {
+                let rowNum: number = 0;
+                file[k].forEach((elem: string) => {
+                    restructuredArr[rowNum] += `<td>${elem}</td>`;
+                    rowNum += 1;
+                });
+            }
+            restructuredArr = restructuredArr.map((tr: string) => {
+                return tr + "</tr>";
+            });
+        }
+    }
+    tableString += restructuredArr.join("");
+    tableString += "</table>";
+    return tableString;
 }
-
 // Function for loading the CSV file
 // Parameter is filepath
 // Returns whether file is loaded or not

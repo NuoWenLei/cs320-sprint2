@@ -87,7 +87,60 @@ function toggleMode(args) {
 // Function for viewing the CSV file
 // Returns a string of the HTML table element if possible
 function view(args) {
-    return "TODO: view results";
+    if (file == null) {
+        return "No file loaded";
+    }
+    if (args.length !== 1) {
+        return "Error: incorrect number of arguments";
+    }
+    var tableString = "<table>";
+    var restructuredArr = [];
+    if (file instanceof (Array)) {
+        if (file.length !== 0) {
+            for (var _ in file[0]) {
+                restructuredArr.push("<tr>");
+            }
+            file.forEach(function (arr) {
+                var rowNum = 0;
+                arr.forEach(function (elem) {
+                    restructuredArr[rowNum] += "<td>".concat(elem, "</td>");
+                    rowNum += 1;
+                });
+            });
+            restructuredArr = restructuredArr.map(function (tr) {
+                return tr + "</tr>";
+            });
+        }
+    }
+    else {
+        if (Object.keys(file).length !== 0) {
+            var header = "<tr>";
+            for (var k in file) {
+                header += "<th>".concat(k, "</th>");
+            }
+            header += "</tr>";
+            tableString += header;
+            file[Object.keys(file)[0]].forEach(function (_) {
+                restructuredArr.push("<tr>");
+            });
+            var _loop_1 = function (k) {
+                var rowNum = 0;
+                file[k].forEach(function (elem) {
+                    restructuredArr[rowNum] += "<td>".concat(elem, "</td>");
+                    rowNum += 1;
+                });
+            };
+            for (var k in file) {
+                _loop_1(k);
+            }
+            restructuredArr = restructuredArr.map(function (tr) {
+                return tr + "</tr>";
+            });
+        }
+    }
+    tableString += restructuredArr.join("");
+    tableString += "</table>";
+    return tableString;
 }
 // Function for loading the CSV file
 // Parameter is filepath
