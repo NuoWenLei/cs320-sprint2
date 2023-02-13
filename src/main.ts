@@ -37,7 +37,11 @@ window.onload = () => {
     // should be HTMLButtonElement. The handler function for a "click" takes no arguments.
 }
 
-function getData(path: string) {
+// Function that mimics loading and parsing data
+// Returns:
+//    - Map<string, array<string>> if data has header
+//    - array<array<string>> if data does not have header
+function getData(path: string): Array<Array<string>> | {[key: string]: string[]} {
     return dataMap[path];
 }
 
@@ -149,6 +153,7 @@ function view(args: string[]): string {
     tableString += "</table>";
     return tableString;
 }
+
 // Function for loading the CSV file
 // Parameter is filepath
 // Returns whether file is loaded or not
@@ -228,7 +233,7 @@ function renderHistory(): void {
 }
 
 // Handles button-click event
-function handleButton(event: MouseEvent) {
+function handleButton(_: MouseEvent | null) {
 
     // Check if command input is empty
     if (commandInput.value.trim() !== "") {
@@ -287,8 +292,11 @@ function getPressCount() {
 
 function handleKeypress(event: KeyboardEvent) {    
     // The event has more fields than just the key pressed (e.g., Alt, Ctrl, etc.)
+    if (event.key === "Enter") {
+        handleButton(null);
+    }
     pressCount = pressCount + 1
-    console.log(`key pressed: ${event.key}. ${getPressCount()} presses seen so far.`)
+    console.log(event.key === "Enter");
 }
 
 // Provide this to other modules (e.g., for testing!)

@@ -27,6 +27,10 @@ window.onload = function () {
     // The event name in that case is "click", not "keypress", and the type of the element 
     // should be HTMLButtonElement. The handler function for a "click" takes no arguments.
 };
+// Function that mimics loading and parsing data
+// Returns:
+//    - Map<string, array<string>> if data has header
+//    - array<array<string>> if data does not have header
 function getData(path) {
     return dataMap[path];
 }
@@ -214,7 +218,7 @@ function renderHistory() {
     });
 }
 // Handles button-click event
-function handleButton(event) {
+function handleButton(_) {
     // Check if command input is empty
     if (commandInput.value.trim() !== "") {
         // Split input into arguments
@@ -271,8 +275,11 @@ function getPressCount() {
 }
 function handleKeypress(event) {
     // The event has more fields than just the key pressed (e.g., Alt, Ctrl, etc.)
+    if (event.key === "Enter") {
+        handleButton(null);
+    }
     pressCount = pressCount + 1;
-    console.log("key pressed: ".concat(event.key, ". ").concat(getPressCount(), " presses seen so far."));
+    console.log(event.key === "Enter");
 }
 // Provide this to other modules (e.g., for testing!)
 // The configuration in this project will require /something/ to be exported.
