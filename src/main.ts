@@ -13,6 +13,9 @@ let historyValues: Array<{
 // Variable for loaded CSV
 let file: Array<Array<string>> | {[key: string]: string[]};
 
+// Variable for storing loaded file name
+let fileName: string;
+
 // Brief mode variable
 let briefMode: boolean = true;
 
@@ -170,17 +173,20 @@ function loadFile(args: string[]): string {
         return "Error: File not found";
     } else if (fileData instanceof Array<Array<string>>) {
         file = fileData;
+        fileName = path;
         return `Loaded ${path} as a CSV file with no header`;
     } else {
         file = fileData;
+        fileName = path;
         return `Loaded ${path} as a CSV file with header`;
     }
 }
 
-// Function for saerching in CSV
+// Function for searching in CSV
 // Parameters are column (index or name) and value
 // Returns row in which a value is present
 function search(args: string[]): string {
+    
     return "TODO: search results";
 }
 
